@@ -5,3 +5,6 @@ yarn.lock
 
 # IDE Cache Files
 .idea/
+
+# Log files
+/logs

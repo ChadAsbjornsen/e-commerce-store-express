@@ -35,7 +35,6 @@ router.patch(
   "/change-role/:userId",
   [
     isAuthenticatedMiddleware.check,
-    CheckPermissionMiddleware.has(roles.ADMIN),
     SchemaValidationMiddleware.verify(changeRolePayload),
   ],
   UserController.changeRole

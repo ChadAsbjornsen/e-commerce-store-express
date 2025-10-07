@@ -1,8 +1,10 @@
 const Express = require("express");
 const app = Express();
 const cors = require("cors");
-const morgan = require("morgan");
 const { Sequelize } = require("sequelize");
+const pino = require('pino-http')();
+
+const logger = require('./config/logger');
 
 const { port } = require("./config");
 const PORT = process.env.PORT || port;
@@ -16,7 +18,7 @@ const ProductRoutes = require("./products/routes");
 const UserModel = require("./common/models/User");
 const ProductModel = require("./common/models/Product");
 
-app.use(morgan("tiny"));
+app.use(pino);
 app.use(cors());
 
 // Middleware that parses the body payloads as JSON to be consumed next set
@@ -26,6 +28,7 @@ app.use(Express.json());
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: "./storage/data.db", // Path to the file that will store the SQLite DB.
+  logging: msg => logger.debug(msg),
 });
 
 // Initialising the Model on sequelize
@@ -37,7 +40,7 @@ ProductModel.initialise(sequelize);
 sequelize
   .sync()
   .then(() => {
-    console.log("Sequelize Initialised!!");
+    logger.info("Sequelize Initialised!!");
 
     // Attaching the Authentication and User Routes to the app.
     app.use("/", AuthorizationRoutes);
@@ -45,9 +48,9 @@ sequelize
     app.use("/product", ProductRoutes);
 
     app.listen(PORT, () => {
-      console.log("Server Listening on PORT:", port);
+      logger.info(`Server Listening on PORT: ${port}`);
     });
   })
   .catch((err) => {
-    console.error("Sequelize Initialisation threw an error:", err);
+    logger.error("Sequelize Initialisation threw an error:", err);
   });

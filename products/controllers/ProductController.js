@@ -1,3 +1,4 @@
+const logger = require("../../config/logger");
 const ProductModel = require("../../common/models/Product");
 
 module.exports = {
@@ -12,6 +13,7 @@ module.exports = {
         });
       })
       .catch((err) => {
+        logger.error(err);
         return res.status(500).json({
           status: false,
           error: err,
@@ -32,6 +34,7 @@ module.exports = {
         });
       })
       .catch((err) => {
+        logger.error(err);
         return res.status(500).json({
           status: false,
           error: err,
@@ -40,8 +43,10 @@ module.exports = {
   },
 
   createProduct: (req, res) => {
+    logger.info("Incoming product request:");
+    logger.info(JSON.stringify(req.body));
     const { body } = req;
-
+    body.category = ProductModel.productCategoryMap[req.category];
     ProductModel.createProduct(body)
       .then((product) => {
         return res.status(200).json({
@@ -50,6 +55,7 @@ module.exports = {
         });
       })
       .catch((err) => {
+        logger.error(err);
         return res.status(500).json({
           status: false,
           error: err,
@@ -85,6 +91,7 @@ module.exports = {
         });
       })
       .catch((err) => {
+        logger.error(err);
         return res.status(500).json({
           status: false,
           error: err,
@@ -107,6 +114,7 @@ module.exports = {
         });
       })
       .catch((err) => {
+        logger.error(err);
         return res.status(500).json({
           status: false,
           error: err,
